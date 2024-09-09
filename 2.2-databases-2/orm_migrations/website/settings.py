@@ -76,12 +76,14 @@ DATABASES = {
         'NAME': 'netology_orm_migrations',
         'HOST': '127.0.0.1',
         'PORT': '5432',
+        'USER': 'postgres',
+        'PASSWORD': '2204',
     }
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
+#Password validation
+#https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -127,7 +129,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 try:
-    from .settings_local import *
+    from .settings import *
 except ImportError:
     pass
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
