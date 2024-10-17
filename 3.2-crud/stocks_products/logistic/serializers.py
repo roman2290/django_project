@@ -36,7 +36,7 @@ class StockSerializer(serializers.ModelSerializer):
                     'quantity': position['quantity'],
                     'price': position['price']
                 },
-                product=['product'],
+                products=['product'],
                 stock=stock)
         return stock
 
