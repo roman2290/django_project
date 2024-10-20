@@ -22,7 +22,8 @@ class AdvertisementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Advertisement
         fields = ('id', 'title', 'description', 'creator',
-                  'status', 'created_at', )
+                  'status', 'created_at',)
+        read_only_fields = ('creator',)
 
     def create(self, validated_data):
         """Метод для создания"""
@@ -40,8 +41,15 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         """Метод для валидации. Вызывается при создании и обновлении."""
 
         # TODO: добавьте требуемую валидацию
-        user = self.context['request'].user
-        if not self.instance:
-            if Advertisement.objects.filter(creator = user).count() > 10:
-                raise serializers.ValidationError(f'User{user} лимит 10запросов')
-        return data
+        if self.context['request'].method == 'POST':
+            if Advertisement.objects.filter(creator_id = self.context['request'].user, status = 'OPEN').count() <= 10:
+                return data
+            else:
+                raise serializers.ValidationError('Слишком много объявлений со статусом OPEN!')
+        if self.context['request'].method == 'PATCH' and Advertisement.objects.filter(status = 'OPEN').count() >= 1:
+            if Advertisement.objects.get(id=self.context['request'].parser_context['kwargs']['pk']).status != data['status']\
+                and Advertisement.objects.filter(creator_id = self.context['request'].user, status = 'OPEN').count() <=10:
+                return data
+            else:
+                raise serializers.ValidationError('Ошибка')
+        
